@@ -6,11 +6,10 @@ class UrlController {
     async shortenUrl(req,res) {
         const url = req.body.url;
 
-        console.log('mandando para o service...');
 
         const shortCode = await this.urlService.createShortUrl(url);
-
-        console.log('retornou do service');
+         console.log(`http://localhost:5000/${shortCode}`); 
+     
         res.status(201).json({
             shortUrl: `http://localhost:5000/${shortCode}`
         });
