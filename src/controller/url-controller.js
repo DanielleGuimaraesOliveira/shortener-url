@@ -29,6 +29,20 @@ class UrlController {
         res.redirect(302, url);
 
     }
+
+    async getHits(req, res) {
+        const { shortCode } = req.params;
+
+        const result = await this.urlService.getHits(shortCode);
+
+        if (!result) {
+            return res.status(404).json({
+                error: 'URL não encontrada'
+            });
+        }
+
+        res.json(result);
+    }
 }
 
 module.exports = UrlController;

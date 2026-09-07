@@ -25,6 +25,21 @@ class UrlService {
         return url.original_url;
     }
 
+    async getHits(shortCode) {
+        const url = await this.urlRepository.getHits(shortCode);
+
+        if (!url) {
+            return null;
+        }
+
+        return {
+            shortCode: url.short_code,
+            originalUrl: url.original_url,
+            hits: url.hits,
+            createdAt: url.created_at
+        };
+    }
+
     generateCode(){
        const characters =
             'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

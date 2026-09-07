@@ -41,6 +41,17 @@ class UrlRepository {
         );
         
     }
+
+    async getHits(shortCode) {
+        const result = await this.database.query(
+            `SELECT short_code, original_url, hits, created_at
+             FROM urls
+             WHERE short_code = $1`,
+            [shortCode]
+        );
+
+        return result.rows[0];
+    }
 }
 
 module.exports = UrlRepository;

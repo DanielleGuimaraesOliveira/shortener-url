@@ -22,5 +22,14 @@ module.exports =(urlController)=>{
     });
 
 
+    router.get('/stats/:shortCode', async (req, res, next) => {
+        try {
+            await urlController.getHits(req, res);
+        } catch (error) {
+            next(error);
+        }
+    });
+
+
     return router;
 } 
