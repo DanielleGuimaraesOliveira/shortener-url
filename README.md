@@ -1,0 +1,11 @@
+###Disponibilidade
+
+A aplicação depende do PostgreSQL tanto para criar URLs curtas quanto para buscar uma URL existente durante o redirecionamento. Portanto, se o banco de dados ficar indisponível por 10 segundos, uma pessoa que tentar acessar um link já existente não conseguirá ser redirecionada durante esse período. Isso acontece porque o sistema precisa consultar o banco para encontrar a original_url correspondente ao short_code. Quando o banco voltar a funcionar, os redirecionamentos voltarão ao normal. Uma possível melhoria futura seria utilizar um cache para armazenar temporariamente URLs acessadas com frequência, reduzindo a dependência direta do banco para cada redirecionamento.
+
+###Consistência
+
+Para reduzir a possibilidade de códigos duplicados, a aplicação gera um código aleatório de 6 caracteres e verifica se ele já existe antes de criar uma nova URL. Porém, essa verificação isoladamente não garante consistência caso dois usuários gerem o mesmo código exatamente ao mesmo tempo: ambos poderiam verificar que o código ainda não existe antes de qualquer um dos dois realizar a inserção. Por isso, a garantia definitiva é feita pelo banco de dados através de uma restrição UNIQUE no campo short_code. Dessa forma, mesmo que duas requisições tentem inserir o mesmo código simultaneamente, o PostgreSQL não permitirá que existam dois registros com o mesmo código.
+
+Desempenho
+
+Por ser uma aplicação monolítica, o processo de criação, consulta e redirecionamento acontece dentro da mesma aplicação. O fato de salvar uma URL no banco ser mais lento não bloqueia diretamente outros usuários de serem redirecionados, pois cada requisição é processada de forma independente e as operações de banco são realizadas de forma assíncrona. Entretanto, como o mesmo servidor atende tanto as operações de criação quanto os redirecionamentos, uma grande quantidade de operações lentas ou acessos simultâneos pode disputar recursos da mesma aplicação e aumentar o tempo de resposta. Em uma arquitetura maior, seria possível separar essas responsabilidades ou utilizar cache para melhorar o desempenho dos redirecionamentos.
